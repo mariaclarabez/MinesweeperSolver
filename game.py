@@ -25,7 +25,7 @@ class Minesweeper:
         self.mines = []
         self.board = []
         self.done = False
-        
+
         # These values can be changed. The default game is set to 16x16 with 40 mines.
         self.row = 16
         self.col = 16
@@ -100,12 +100,14 @@ class Minesweeper:
                 self.buttons.append(button)
             self.board.append(lst)
 
-
     def init_game(self):
         """ Resets all of the game's attributes so that a new game can start,
         including all of the buttons and labels displayed in the GUI. Increments
         the num_games attribute by 1 every time the method is called.
         """
+
+        # increment the number of games at every turn. We use this variable when
+        # we run the game several times and check the win rate.
         self.num_games += 1
         self.first_click = True
         self.first_click_btn = None
@@ -150,20 +152,21 @@ class Minesweeper:
                         match = True
                         break
 
-            # if
-
+            # if a mine is being placed at a given cell
             if self.board[row][col].place_mine():
+                # place it on the board
                 self.mines.append(self.board[row][col])
-                self.update_surrounding_buttons(row, col, 1)
+                # update the surrounding buttons passing in the row, column, and value of 1
+                self.update_adj_btns(row, col, 1)
                 mines -= 1
 
     def get_adj_cells(self, row, col):
-        '''Return a list of surrounding buttons of button at row and col in board.
+        """Return a list of surrounding buttons of button at row and col in board.
 
         :param row: int
         :param col: int
         :return: list of buttons
-        '''
+        """
 
         SURROUNDING = ((-1, -1), (-1, 0), (-1, 1),
                        (0, -1), (0, 1),
@@ -179,7 +182,7 @@ class Minesweeper:
 
         return neighbours
 
-    def update_surrounding_buttons(self, row, col, value):
+    def update_adj_btns(self, row, col, value):
         '''Update surrounding buttons' value adding given value.
 
         :param row: int
