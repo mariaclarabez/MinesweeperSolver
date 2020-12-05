@@ -1,12 +1,12 @@
 from Buttons import *
-from cspbase import *
+from backtrack import *
 from propagators import *
 import minesweeper_csp
 import random
 
-'''Our executable file. The game board is a list of lists, where every item in the nested list is a Button object. 
-Once revealed, a cell can be a numerical value between 1 and 8, representing how many bombs are adjacent to a the 
-cell; a mine; or a blank square with no information. The Minesweeper class creates all of the game visualization and 
+'''Our executable file. The game board is a list of lists, where every item in the nested list is a Button object.
+Once revealed, a cell can be a numerical value between 1 and 8, representing how many bombs are adjacent to a the
+cell; a mine; or a blank square with no information. The Minesweeper class creates all of the game visualization and
 adds the buttons to the GUI, and calls the methods to solve single or multiple iterations of the game. '''
 
 

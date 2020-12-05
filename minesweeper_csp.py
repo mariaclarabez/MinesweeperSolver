@@ -1,4 +1,7 @@
-from cspbase import *
+from variable import *
+from constraint import *
+from csp import *
+from backtrack import *
 import itertools
 
 
