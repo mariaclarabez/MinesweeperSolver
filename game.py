@@ -29,7 +29,7 @@ class Minesweeper:
         # These values can be changed. The default game is set to 16x16 with 40 mines.
         self.row = 16
         self.col = 16
-        self.num_mines = 40
+        self.num_mines = 55
         self.mines_left = self.num_mines
         self.flags = 0
 
@@ -68,7 +68,7 @@ class Minesweeper:
         # Call solve method when the solve button is clicked.
         self.solve_btn.bind("<Button-1>", lambda Button: self.solve())
 
-        self.iterations = 50
+        self.iterations = 1000
         # Display "Run x iterations" button.
         self.solve_btn = Button(self.frame, text="Run " + str(self.iterations) + " iterations")
         self.solve_btn.grid(row=self.row + 3, column=0, columnspan=self.col, sticky=W)
