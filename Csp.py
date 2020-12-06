@@ -1,5 +1,5 @@
-from variable import *
-from constraint import *
+from Variable import *
+from Constraint import *
 
 class CSP:
     '''Class for packing up a set of variables into a CSP problem.

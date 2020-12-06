@@ -1,5 +1,5 @@
 from Buttons import *
-from backtrack import *
+from BT import *
 from propagators import *
 import minesweeper_csp
 import random
@@ -66,9 +66,9 @@ class Minesweeper:
         self.solve_btn = Button(self.frame, text="Solve")
         self.solve_btn.grid(row=self.row + 2, column=0, columnspan=self.col, sticky=W)
         # Call solve method when the solve button is clicked.
-        self.solve_btn.bind("<Button-1>", lambda Button: self.solve())
+        self.solve_btn.bind("<Button-1>", lambda Button: self.solve_to_completion())
 
-        self.iterations = 50
+        self.iterations = 800
         # Display "Run x iterations" button.
         self.solve_btn = Button(self.frame, text="Run " + str(self.iterations) + " iterations")
         self.solve_btn.grid(row=self.row + 3, column=0, columnspan=self.col, sticky=W)
@@ -157,49 +157,47 @@ class Minesweeper:
                 # place it on the board
                 self.mines.append(self.board[row][col])
                 # update the surrounding buttons passing in the row, column, and value of 1
-                self.update_adj_btns(row, col, 1)
+                self.update_adj_cells(row, col, 1)
                 mines -= 1
 
     def get_adj_cells(self, row, col):
-        """Return a list of surrounding buttons of button at row and col in board.
-
-        :param row: int
-        :param col: int
-        :return: list of buttons
+        """ Passing in a row and a column that define a cell on the board, return a list
+        of cells that surround it.
         """
 
-        SURROUNDING = ((-1, -1), (-1, 0), (-1, 1),
-                       (0, -1), (0, 1),
-                       (1, -1), (1, 0), (1, 1))
+        # all the positions of the cells that surround the given cell
+        adjacent_pos = ((-1, -1), (-1, 0), (-1, 1),
+                        (0, -1), (0, 1),
+                        (1, -1), (1, 0), (1, 1))
 
-        neighbours = []
+        adj_cells = []
 
-        for pos in SURROUNDING:
-            temp_row = row + pos[0]
-            temp_col = col + pos[1]
-            if 0 <= temp_row < self.row and 0 <= temp_col < self.col:
-                neighbours.append(self.board[temp_row][temp_col])
+        for pos in adjacent_pos:
+            row_tmp = row + pos[0]
+            col_tmp = col + pos[1]
+            if 0 <= row_tmp < self.row and 0 <= col_tmp < self.col:
+                # append the cell at the coordinate
+                adj_cells.append(self.board[row_tmp][col_tmp])
 
-        return neighbours
+        return adj_cells
 
-    def update_adj_btns(self, row, col, value):
-        '''Update surrounding buttons' value adding given value.
+    def update_adj_cells(self, row, col, val):
+        """Update the value of the adjacent cells to a given button, defined by the
+        row and column parameters.
+        """
 
-        :param row: int
-        :param col: int
-        '''
-
+        # list of adjacent cells
         cells = self.get_adj_cells(row, col)
         for cell in cells:
             if not cell.is_mine():
-                cell.value += value
+                # if the cell is not a mine, increment val
+                cell.value += val
 
-    def lclicked(self, button):
-        '''Left click action on given button.
-        '''
+    def left_clicked(self, button):
+        """Left clicking on a button.
+        """
 
-        if self.first_click == True:
-            # print("enter_first_click")
+        if self.first_click:
             self.first_click_btn = button
             self.place_mines()
             self.first_click = False
@@ -214,7 +212,7 @@ class Minesweeper:
         if button.is_mine():
             button.show_hit_mine()
             self.restart_game_btn.config(image=self.smiley_lost)
-            self.gameover()
+            self.game_over()
         # Case2: hits an empty button, keep showing surrounding buttons until all not empty.
         elif button.value == 0:
             buttons = [button]
@@ -227,12 +225,12 @@ class Minesweeper:
                     neighbour.show()
 
         # Check whether the game wins or not.
-        if self.is_win():
-            self.gameover()
+        if self.game_won():
+            self.game_over()
 
-    def rclicked(self, button):
-        '''Right click action on given button.
-        '''
+    def right_clicked(self, button):
+        """Right click action on given button.
+        """
 
         # Do nothing if it's visible.
         if button.is_show():
@@ -250,74 +248,73 @@ class Minesweeper:
         self.mines_left = (self.num_mines - self.flags) if self.flags < self.num_mines else 0
         self.mines_left_label_2.config(text=self.mines_left)
 
-        if self.is_win():
-            self.gameover()
+        if self.game_won():
+            self.game_over()
 
-    def gameover(self):
-        '''Disable all buttons and show all mines.
-        '''
-        # if self.is_win():
-        #     self.win_times += 1
+    def game_over(self):
+        """Once the game is over, all the buttons are disabled and all of the mines are shown.
+        """
+
         self.done = True
         for button in self.buttons:
             if button.is_mine():
-                if not button.is_flag() and not self.is_win():
+                if not button.is_flag() and not self.game_won():
                     button.show()
             elif button.is_flag():
                 button.show_wrong_flag()
+
+            # disable the buttons
             button.unbind('<Button-1>')
             button.unbind('<Button-3>')
 
-    def is_win(self):
-        '''Return True if game wins; False otherwise. The game wins if all buttons are either visible or flagged, and
-        the amount of flags equals the amount of mines.
+    def game_won(self):
+        """Return true if the game is won and false otherwise. The conditions for the game being won are: all the
+        cells are visible or flagged (if they are mines), and the amount of flags is equal to the amount of mines
+        at the start of the game.
+        """
 
-        :return: bool
-        '''
-
-        # if self.flags == self.mines_amount:
-        # for mine in self.mines:
-        # if not mine.is_flag():
-        # return False
-        for button in self.buttons:
-            if not button.is_show() and not button.is_mine():
+        for cell in self.buttons:
+            # if there is a cell that is not visible and it is not a mine
+            if not cell.is_show() and not cell.is_mine():
                 return False
+
         self.restart_game_btn.config(image=self.smiley_won)
         return True
-        # else:
-        # return False
 
-    def solve(self):
-        '''Solve current game completely.
-        '''
+    def solve_to_completion(self):
+        """Solve the current iteration of the game.
+        """
         if self.done:
             return
+
         # Unflag all buttons.
-        for button in self.buttons:
-            if button.is_flag():
-                button.flag()
+        for cell in self.buttons:
+            if cell.is_flag():
+                cell.flag()
                 self.flags -= 1
 
         while not self.done:
-            assigned = self.solve_step()
-            # No variable assigned by CSP.
-            if not assigned:
-                choose_button = self.guess_move()
-                self.lclicked(choose_button)
+            assigned_variable = self.solve_step()
+
+            # If no variable assigned by CSP.
+            if not assigned_variable:
+                # guess the move.
+                choose_cell = self.guess_move()
+                self.left_clicked(choose_cell)
 
     def solve_x_times(self, times):
         self.games_won = 0
         self.num_games = 0
-        print("board size: {0}x{1}\nmines #: {2}\n{3}".format(self.row, self.col, self.num_mines, "-" * 27))
+        print("Board size: {0}x{1}\nMines #: {2}\n{3}".format(self.row, self.col, self.num_mines, "-" * 27))
         for i in range(times):
-            self.solve()
-            if self.is_win():
+            self.solve_to_completion()
+            if self.game_won():
                 self.games_won += 1
             self.init_game()
             if (i + 1) % 100 == 0:
-                print("solved: " + str(i + 1) + " times")
+                print("Solved: " + str(i + 1) + " times")
 
-        print("-------Run results---------")
+        print("-------Results---------")
         print("Matches played: " + str(self.num_games))
         print("Wins: " + str(self.games_won))
         print("Win rate: " + str(self.games_won / self.num_games))
@@ -369,18 +366,18 @@ class Minesweeper:
 
             if var.get_assigned_value() == 1:
                 if not self.board[row][col].is_flag():
-                    self.rclicked(self.board[row][col])
+                    self.right_clicked(self.board[row][col])
                     is_assigned = True
             elif var.get_assigned_value() == 0:
                 if not self.board[row][col].is_show():
-                    self.lclicked(self.board[row][col])
+                    self.left_clicked(self.board[row][col])
                     is_assigned = True
 
         return is_assigned
 
     def create_board(self, board):
-        '''Import game from a list of lists with numbers.
-        '''
+        """Import game from a list of lists with numbers.
+        """
 
         self.row = len(board)
         self.col = len(board[0])

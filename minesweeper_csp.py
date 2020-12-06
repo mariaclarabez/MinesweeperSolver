@@ -1,7 +1,7 @@
-from variable import *
-from constraint import *
-from csp import *
-from backtrack import *
+from Variable import *
+from Constraint import *
+from Csp import *
+from BT import *
 import itertools
 
 
