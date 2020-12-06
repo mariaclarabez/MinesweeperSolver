@@ -324,6 +324,8 @@ class Minesweeper:
         print("Matches played: " + str(self.num_games))
         print("Wins: " + str(self.games_won))
         print("Win rate: " + str(self.games_won / self.num_games))
+
+        # reset games won and number of games
         self.games_won = 0
         self.num_games = 0
 
