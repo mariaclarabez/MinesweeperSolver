@@ -319,7 +319,8 @@ class Minesweeper:
             if (i + 1) % 100 == 0:
                 print("Solved: " + str(i + 1) + " times")
 
-        print("-------Results---------")
+        # Display results on terminal
+        print("Results:")
         print("Matches played: " + str(self.num_games))
         print("Wins: " + str(self.games_won))
         print("Win rate: " + str(self.games_won / self.num_games))
