@@ -15,7 +15,7 @@ class Buttons(Button):
         self.img_wrong = images['wrong']
         self.img_no = images['no']
 
-        super(Buttons, self).__init__(frame, image = self.img_blank)
+        super(Buttons, self).__init__(frame, image=self.img_blank)
 
         self._x = x
         self._y = y
@@ -68,11 +68,10 @@ class Buttons(Button):
 
         if not self.is_visible:
             if self.is_flagged:
-                self.config(image = self.img_blank)
+                self.config(image=self.img_blank)
             else:
-                self.config(image = self.img_flag)
+                self.config(image=self.img_flag)
             self.is_flagged = not self.is_flagged
-
 
     def is_flag(self):
         '''Return True if button is flagged; False otherwise.
@@ -95,10 +94,10 @@ class Buttons(Button):
         return False
 
     def is_mine(self):
-        '''Return true if button it's a mine; false otherwise;
+        """Return true if button it's a mine; false otherwise;
 
         :return: bool
-        '''
+        """
 
         return self.is_a_mine
 
@@ -109,11 +108,11 @@ class Buttons(Button):
         if not self.is_visible and not self.is_flagged:
             self.is_visible = True
             if self.is_mine():
-                self.config(image = self.img_mine)
+                self.config(image=self.img_mine)
             else:
-                self.config(image = self.img_no[self._value])
+                self.config(image=self.img_no[self._value])
 
-    def is_show(self):
+    def is_visible(self):
         '''Return True if button is visible; False otherwise.
         '''
 
@@ -133,18 +132,16 @@ class Buttons(Button):
         '''Set button to wrong flag.
         '''
 
-        self.config(image = self.img_wrong)
+        self.config(image=self.img_wrong)
 
     def show_hit_mine(self):
         '''Set button to hit mine.
         '''
 
-        self.config(image = self.img_hit_mine)
+        self.config(image=self.img_hit_mine)
 
     def show_blank(self):
         '''Set button to blank.
         '''
 
-        self.config(image = self.img_blank)
-
-
+        self.config(image=self.img_blank)
