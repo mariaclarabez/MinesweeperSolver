@@ -1,15 +1,19 @@
+'''
+This class represents a constraint satisfaction problem. Thus, it has
+functionality for adding, maintaining, and accessing variables and constraints.
+'''
+
 from Variable import *
 from Constraint import *
 
 class CSP:
-    '''Class for packing up a set of variables into a CSP problem.
-       Contains various utility routines for accessing the problem.
-       The variables of the CSP can be added later or on initialization.
-       The constraints must be added later'''
+    '''Class for packing up a set of variables into a CSP problem. The variables
+    of the CSP can be added later or on initialization. The constraints must be
+    added later'''
 
     def __init__(self, name, vars=[]):
-        '''create a CSP object. Specify a name (a string) and
-           optionally a set of variables'''
+        '''create a CSP object. Specify a name (a string) and optionally a set
+        of variables'''
 
         self.name = name
         self.vars = []
@@ -19,8 +23,8 @@ class CSP:
             self.add_var(v)
 
     def add_var(self,v):
-        '''Add variable object to CSP while setting up an index
-           to obtain the constraints over this variable'''
+        '''Add variable object to CSP while setting up an index to obtain the
+        constraints over this variable'''
         if not type(v) is Variable:
             print("Trying to add non variable ", v, " to CSP object")
         elif v in self.vars_to_cons:
@@ -31,7 +35,7 @@ class CSP:
 
     def add_constraint(self,c):
         '''Add constraint to CSP. Note that all variables in the
-           constraints scope must already have been added to the CSP'''
+        constraints scope must already have been added to the CSP'''
         if not type(c) is Constraint:
             print("Trying to add non constraint ", c, " to CSP object")
         else:

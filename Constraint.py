@@ -1,43 +1,33 @@
+'''
+This class represents a Minesweeper constraint. This class allows one to define
+constraints specified by tables of satisfying assignments.
+'''
+
 class Constraint:
     '''Class for defining constraints variable objects specifes an
-       ordering over variables.  This ordering is used when calling
-       the satisfied function which tests if an assignment to the
-       variables in the constraint's scope satisfies the constraint'''
+       ordering over variables.'''
 
     def __init__(self, name, scope):
-        '''create a constraint object, specify the constraint name (a
-        string) and its scope (an ORDERED list of variable objects).
-        The order of the variables in the scope is critical to the
-        functioning of the constraint.
-
-        Consraints are implemented as storing a set of satisfying
-        tuples (i.e., each tuple specifies a value for each variable
-        in the scope such that this sequence of values satisfies the
-        constraints).
-
-        NOTE: This is a very space expensive representation...a proper
-        constraint object would allow for representing the constraint
-        with a function.
+        '''Initialization function. Consraints are implemented as storing a set
+        of satisfying tuples.
         '''
 
         self.scope = list(scope)
         self.name = name
         self.sat_tuples = dict()
 
-        #The next object data item 'sup_tuples' will be used to help
-        #support GAC propgation. It allows access to a list of
-        #satisfying tuples that contain a particular variable/value
-        #pair.
+        # list of satisfying tuples that contain a particular variable/value
         self.sup_tuples = dict()
 
     def add_satisfying_tuples(self, tuples):
-        '''We specify the constraint by adding its complete list of satisfying tuples.'''
+        '''We specify the constraint by adding its complete list of satisfying
+        tuples to sup_tuples.'''
         for x in tuples:
-            t = tuple(x)  #ensure we have an immutable tuple
+            t = tuple(x)  # ensure we have an immutable tuple
             if not t in self.sat_tuples:
                 self.sat_tuples[t] = True
 
-            #now put t in as a support for all of the variable values in it
+            # now put t in as a support for all of the variable values in it
             for i, val in enumerate(t):
                 var = self.scope[i]
                 if not (var,val) in self.sup_tuples:
