@@ -112,7 +112,7 @@ class Buttons(Button):
             else:
                 self.config(image=self.img_no[self._value])
 
-    def is_visible(self):
+    def is_seen(self):
         '''Return True if button is visible; False otherwise.
         '''
 

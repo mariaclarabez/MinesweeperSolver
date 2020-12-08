@@ -21,7 +21,7 @@ def csp_model(minesweeper):
             name = str(row) + " " + str(col)
             if minesweeper.board[row][col].is_flag():
                 domain = [1]
-            elif minesweeper.board[row][col].is_visible():
+            elif minesweeper.board[row][col].is_seen():
                 domain = [0]
             else:
                 domain = [0,1]
@@ -36,21 +36,21 @@ def csp_model(minesweeper):
     unassign = []
     for button in minesweeper.cells:
         # Assign value to all known variables.
-        if button.is_visible():
+        if button.is_seen():
             variables[button.x][button.y].assign(0)
         elif button.is_flag():
             variables[button.x][button.y].assign(1)
         else:
             unassign.append(variables[button.x][button.y])
         # Constraint info for a non-empty visible button.
-        if button.is_visible() and not button.value == 0:
+        if button.is_seen() and not button.value == 0:
             surrounding = minesweeper.get_adj_cells(button.x, button.y)
             scope = []
             sum1 = button.value
             for sur in surrounding:
                 if sur.is_flag():
                     sum1 -= 1
-                if not sur.is_visible() and not sur.is_flag():
+                if not sur.is_seen() and not sur.is_flag():
                     scope.append(variables[sur.x][sur.y])
             name = str(button.x) + " " + str(button.y)
             # Avoid empty scope. (All surrounding buttons are either visible or flagged.)
