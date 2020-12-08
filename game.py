@@ -21,7 +21,7 @@ class Minesweeper:
         self.num_games = 0
         self.games_won = 0
 
-        self.buttons = []
+        self.cells = []
         self.mines = []
         self.board = []
         self.done = False
@@ -97,7 +97,7 @@ class Minesweeper:
                 button.grid(row=row + 1, column=col)
                 # append inner list of buttons
                 lst.append(button)
-                self.buttons.append(button)
+                self.cells.append(button)
             self.board.append(lst)
 
     def init_game(self):
@@ -119,7 +119,7 @@ class Minesweeper:
         self.mines = []
 
         # The buttons should be reset at the start of every game.
-        for each in self.buttons:
+        for each in self.cells:
             each.reset()
 
         # reset mines left label
@@ -193,55 +193,54 @@ class Minesweeper:
                 # if the cell is not a mine, increment val
                 cell.value += val
 
-    def left_clicked(self, button):
-        """Left clicking on a button.
+    def left_clicked(self, cell):
+        """Left clicking on a cell.
         """
 
         if self.first_click:
-            self.first_click_btn = button
+            self.first_click_btn = cell
             self.place_mines()
             self.first_click = False
 
         # Do nothing if it's visible or it's flagged.
-        if button.is_show() or button.is_flag():
+        if cell.is_show() or cell.is_flag():
             return
 
-        # Case0: hits a number button, show the button.
-        button.show()
-        # Case1: hits a mine, game over.
-        if button.is_mine():
-            button.show_hit_mine()
+        # Show the button upon click
+        cell.show()
+        # Game over if a mine is clicked.
+        if cell.is_mine():
+            cell.show_hit_mine()
             self.restart_game_btn.config(image=self.smiley_lost)
             self.game_over()
-        # Case2: hits an empty button, keep showing surrounding buttons until all not empty.
-        elif button.value == 0:
-            buttons = [button]
-            while buttons:
-                temp_button = buttons.pop()
-                surrounding = self.get_adj_cells(temp_button.x, temp_button.y)
+        # when an empty button is hit, keep showing surrounding buttons until all not empty.
+        elif cell.value == 0:
+            cells = [cell]
+            while cells:
+                tmp_cell = cells.pop()
+                surrounding = self.get_adj_cells(tmp_cell.x, tmp_cell.y)
                 for neighbour in surrounding:
                     if not neighbour.is_show() and neighbour.value == 0:
-                        buttons.append(neighbour)
+                        cells.append(neighbour)
                     neighbour.show()
 
-        # Check whether the game wins or not.
         if self.game_won():
             self.game_over()
 
-    def right_clicked(self, button):
+    def right_clicked(self, cell):
         """Right click action on given button.
         """
 
         # Do nothing if it's visible.
-        if button.is_show():
+        if cell.is_show():
             return
 
-        # Flag/Unflag a button.
-        if button.is_flag():
-            button.flag()
+        # Flag/Unflag a cell
+        if cell.is_flag():
+            cell.flag()
             self.flags -= 1
         else:
-            button.flag()
+            cell.flag()
             self.flags += 1
 
         # Update remaining mines label.
@@ -256,7 +255,7 @@ class Minesweeper:
         """
 
         self.done = True
-        for button in self.buttons:
+        for button in self.cells:
             if button.is_mine():
                 if not button.is_flag() and not self.game_won():
                     button.show()
@@ -273,7 +272,7 @@ class Minesweeper:
         at the start of the game.
         """
 
-        for cell in self.buttons:
+        for cell in self.cells:
             # if there is a cell that is not visible and it is not a mine
             if not cell.is_show() and not cell.is_mine():
                 return False
@@ -288,7 +287,7 @@ class Minesweeper:
             return
 
         # Unflag all buttons.
-        for cell in self.buttons:
+        for cell in self.cells:
             if cell.is_flag():
                 cell.flag()
                 self.flags -= 1
@@ -303,9 +302,13 @@ class Minesweeper:
                 self.left_clicked(choose_cell)
 
     def solve_x_times(self, times):
+        """ Solves the game the number of time specified by the parameter and displays the result to the terminal,
+        including games play, wins, and the win rate.
+        """
         self.games_won = 0
         self.num_games = 0
         print("Board size: {0}x{1}\nMines #: {2}\n{3}".format(self.row, self.col, self.num_mines, "-" * 27))
+
         for i in range(times):
             self.solve_to_completion()
             if self.game_won():
@@ -314,37 +317,37 @@ class Minesweeper:
             if (i + 1) % 100 == 0:
                 print("Solved: " + str(i + 1) + " times")
 
+        # display the results to terminal
         print("-------Results---------")
         print("Matches played: " + str(self.num_games))
         print("Wins: " + str(self.games_won))
         print("Win rate: " + str(self.games_won / self.num_games))
+
+        # reset
         self.games_won = 0
         self.num_games = 0
 
     def guess_move(self):
-        '''Return an unclick button.
+        """Returns an unclicked cell.
+        """
 
-        :return: button
-        '''
-
-        buttons = []
+        cells = []
         corners = [self.board[0][0], self.board[0][self.col - 1], self.board[self.row - 1][0],
                    self.board[self.row - 1][self.col - 1]]
-        for button in self.buttons:
-            if not button.is_show() and not button.is_flag():
-                buttons.append(button)
 
-        for button in corners:
-            if not button.is_show() and not button.is_flag():
-                return button
+        for cell in self.cells:
+            if not cell.is_show() and not cell.is_flag():
+                cells.append(cell)
 
-        return random.choice(buttons)
+        for cell in corners:
+            if not cell.is_show() and not cell.is_flag():
+                return cell
+
+        return random.choice(cells)
 
     def solve_step(self):
         """Solve parts of the game bases on current board's information by using CSP.
         Return the number of variables made.
-
-        :return: Return int
         """
 
         is_assigned = False
@@ -360,8 +363,6 @@ class Minesweeper:
                 row = int(cell[0])
                 col = int(cell[1])
             except:
-                # continue if it's not a vriable in board.
-                # in board variable name's format: row, col
                 continue
 
             if var.get_assigned_value() == 1:
@@ -385,7 +386,7 @@ class Minesweeper:
         self.num_mines = 0
 
         self.flags = 0
-        self.buttons = []
+        self.cells = []
         self.mines = []
         self.board = []
 
@@ -399,7 +400,7 @@ class Minesweeper:
                 # first row grid for new game button
                 button.grid(row=row + 1, column=col)
                 lis.append(button)
-                self.buttons.append(button)
+                self.cells.append(button)
             self.board.append(lis)
 
         self.mines_left = self.num_mines

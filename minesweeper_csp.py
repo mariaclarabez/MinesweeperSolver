@@ -34,7 +34,7 @@ def csp_model(minesweeper):
     # cons = [[name(str), [variable, variable,..], sum(int)], ...]
     cons = []
     unassign = []
-    for button in minesweeper.buttons:
+    for button in minesweeper.cells:
         # Assign value to all known variables.
         if button.is_show():
             variables[button.x][button.y].assign(0)
