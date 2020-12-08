@@ -204,7 +204,7 @@ class Minesweeper:
             self.first_click = False
 
         # Do nothing if it's visible or it's flagged.
-        if button.is_visible() or button.is_flag():
+        if button.is_seen() or button.is_flag():
             return
 
         # Case0: hits a number button, show the button.
@@ -221,7 +221,7 @@ class Minesweeper:
                 temp_button = buttons.pop()
                 surrounding = self.get_adj_cells(temp_button.x, temp_button.y)
                 for neighbour in surrounding:
-                    if not neighbour.is_visible() and neighbour.value == 0:
+                    if not neighbour.is_seen() and neighbour.value == 0:
                         buttons.append(neighbour)
                     neighbour.show()
 
@@ -234,7 +234,7 @@ class Minesweeper:
         """
 
         # If the button is visible, nothing happens.
-        if button.is_visible():
+        if button.is_seen():
             return
 
         # Flag/Unflag a button.
@@ -276,7 +276,7 @@ class Minesweeper:
 
         for cell in self.cells:
             # if there is a cell that is not visible and it is not a mine
-            if not cell.is_visible() and not cell.is_mine():
+            if not cell.is_seen() and not cell.is_mine():
                 return False
 
         self.restart_game_btn.config(image=self.smiley_won)
@@ -339,11 +339,11 @@ class Minesweeper:
                    self.board[self.row - 1][self.col - 1]]
 
         for cell in self.cells:
-            if not cell.is_visible() and not cell.is_flag():
+            if not cell.is_seen() and not cell.is_flag():
                 cells.append(cell)
 
         for cell in corners:
-            if not cell.is_visible() and not cell.is_flag():
+            if not cell.is_seen() and not cell.is_flag():
                 return cell
 
         return random.choice(cells)
@@ -377,7 +377,7 @@ class Minesweeper:
                     self.right_clicked(self.board[row][col])
                     is_assigned = True
             elif var.get_assigned_value() == 0:
-                if not self.board[row][col].is_visible():
+                if not self.board[row][col].is_seen():
                     self.left_clicked(self.board[row][col])
                     is_assigned = True
 
